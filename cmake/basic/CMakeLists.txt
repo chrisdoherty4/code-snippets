@@ -10,11 +10,8 @@ add_subdirectory(speaker)
 add_executable(speak
   ${CMAKE_CURRENT_SOURCE_DIR}/main.c
 )
-target_include_directories(speak
-  PRIVATE
-    $<TARGET_PROPERTY:speaker,INTERFACE_INCLUDE_DIRECTORIES>
-)
 target_link_libraries(speak
   PRIVATE
     speaker
+    speaker-headers
 )
