@@ -4,14 +4,8 @@
 #include <linux/kernel.h>
 #include <linux/fs.h>
 
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Chris Doherty");
-MODULE_DESCRIPTION("Random number generator");
-MODULE_VERSION("0.1");
-
-#define DRIVER_NAME "RNG"
-#define DEVICE_NAME "rng"
-#define CLASS_NAME "examplerng"
+#define DEVICE_NAME "cpdrng"
+#define DRIVER_NAME DEVICE_NAME
 
 #define LOG(level, format, ...) \
   printk(level "[" DRIVER_NAME "] " format, ##__VA_ARGS__)
@@ -37,6 +31,7 @@ static int __init rng_init(void) {
   LOG(KERN_INFO, "initialising");
 
   majorNumber = register_chrdev(0, DEVICE_NAME, &fops);
+
   if (majorNumber < 0) {
     LOG(KERN_ALERT, "failed to register character device.\n");
     return majorNumber;
@@ -55,13 +50,16 @@ static void __exit rng_exit(void) {
 static int device_open(struct inode *node, struct file *handle)
 {
   opens++;
+
   LOG(KERN_INFO, "device opened %d times\n", opens);
+
   return 0;
 }
 
 static int device_release(struct inode *node, struct file *handle)
 {
   opens--;
+
   LOG(KERN_INFO, "device closed. %d handles remaining.\n", opens);
 
   return 0;
@@ -81,3 +79,7 @@ static ssize_t device_write(struct file *handle, const char *data, size_t size, 
 
 module_init(rng_init);
 module_exit(rng_exit);
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Chris Doherty");
+MODULE_DESCRIPTION("Random number generator");
+MODULE_VERSION("0.1");
