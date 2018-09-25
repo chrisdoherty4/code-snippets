@@ -4,6 +4,9 @@
 #include <linux/kernel.h>
 #include <linux/fs.h>
 #include <linux/cdev.h>
+#include <linux/random.h>
+#include <asm/uaccess.h>
+#include <asm/error.h>
 
 #define DEVICE_NAME "cpdrng"
 #define DRIVER_NAME DEVICE_NAME
@@ -17,10 +20,10 @@ static ssize_t device_read(struct file *, char *, size_t, loff_t *);
 static ssize_t device_write(struct file *, const char *, size_t, loff_t *);
 
 static struct file_operations fops = {
-  .open = device_open,
-  .release = device_release,
-  .read = device_read,
-  .write = device_write
+  open: device_open,
+  release: device_release,
+  read: device_read,
+  write: device_write
 };
 
 static struct class *device_class = NULL;
@@ -75,7 +78,14 @@ static int device_release(struct inode *node, struct file *handle)
 static ssize_t device_read(struct file *handle, char *data, size_t size, loff_t *offset)
 {
   LOG(KERN_INFO, "tried reading from the device.\n");
-  return -EINVAL;
+
+  char bytes[256] = {0};
+
+  get_random_bytes(bytes, sizeof(bytes));
+
+
+
+  return 0;
 }
 
 static ssize_t device_write(struct file *handle, const char *data, size_t size, loff_t *offset)
